@@ -5,12 +5,16 @@ from config import Config
 from eth_account.messages import encode_defunct
 # Initialize Web3
 from web3 import Web3
+from fastapi import Depends, FastAPI
+from fastapi_simple_rate_limiter import rate_limiter
 w3 = Web3(Web3.HTTPProvider(Config.RPC_ENDPOINT))
 router = APIRouter()
 
+
 class JWTRouter:
     @router.get("/get-msg")
-    def get_sign_message(address: str = Query(...)):
+    @rate_limiter(limit=10, seconds=60)
+    async def get_sign_message(address: str = Query(...)):
         try:
             message = SignModule.get_sign_msg(address=address)
             return {"message":message}
@@ -20,7 +24,8 @@ class JWTRouter:
                 detail=str(e)
             )
     @router.post("/get-jwt")
-    def get_jwt(request_data: JWTModel):
+    @rate_limiter(limit=10, seconds=60)
+    async def get_jwt(request_data: JWTModel):
         try:
             signature = request_data.signature
             msg = request_data.msg
