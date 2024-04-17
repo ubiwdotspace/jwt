@@ -24,16 +24,21 @@ class JWTRouter:
         try:
             signature = request_data.signature
             msg = request_data.msg
+            live = SignModule.validate_nonce(msg)
+            if(live):
             # signable_msg_from_hexstr = encode_defunct(text=msg)
             # signed_message =  w3.eth.account.sign_message(signable_msg_from_hexstr, private_key=key)
             # print(signed_message)
-            signer = SignModule.get_address_of(signature,msg)
-            print(signer)
-            if(signer):
-                payload = {"sub": "user1", "aud": ["audience"]}
-                payload["sub"] = signer
-                token = JWTModule.create_jwt(payload)
-                return {"token": token}
+                signer = SignModule.get_address_of(signature,msg)
+                # print(signer)
+                
+                if(signer):
+                    payload = {"sub": "user1", "aud": ["audience"]}
+                    payload["sub"] = signer
+                    token = JWTModule.create_jwt(payload)
+                    return {"token": token}
+            else:
+                return {"signature": "expired"}    
 
         except Exception as e:
             raise HTTPException(

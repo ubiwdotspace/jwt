@@ -3,11 +3,23 @@ from config import Config
 from datetime import datetime
 from hexbytes import HexBytes
 from eth_account.messages import encode_defunct
+import re
 
 # Initialize Web3
 w3 = Web3(Web3.HTTPProvider(Config.RPC_ENDPOINT))
 
 class SignModule:
+    @staticmethod
+    def validate_nonce(msg):
+        match = re.search(r"nonce (\d+)", msg)
+        if match:
+            nonce = int(match.group(1))
+            now = datetime.utcnow().timestamp()
+            if now - nonce < 300:
+                return True
+            else:
+                return False
+            
     @staticmethod
     def get_nonce():
         """ Generates a nonce based on the current UTC timestamp. """
