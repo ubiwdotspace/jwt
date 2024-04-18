@@ -13,7 +13,7 @@ router = APIRouter()
 
 class JWTRouter:
     @router.get("/get-msg")
-    @rate_limiter(limit=10, seconds=60)
+    @rate_limiter(limit=1000, seconds=60)
     async def get_sign_message(address: str = Query(...)):
         try:
             message = SignModule.get_sign_msg(address=address)
@@ -24,7 +24,7 @@ class JWTRouter:
                 detail=str(e)
             )
     @router.post("/get-jwt")
-    @rate_limiter(limit=10, seconds=60)
+    @rate_limiter(limit=1000, seconds=60)
     async def get_jwt(request_data: JWTModel):
         try:
             signature = request_data.signature
