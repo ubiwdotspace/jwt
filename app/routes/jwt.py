@@ -34,12 +34,10 @@ class JWTRouter:
             # signable_msg_from_hexstr = encode_defunct(text=msg)
             # signed_message =  w3.eth.account.sign_message(signable_msg_from_hexstr, private_key=key)
             # print(signed_message)
-                signer = SignModule.get_address_of(signature,msg)
-                # print(signer)
-                
+                signer = SignModule.get_address_of(signature,msg)              
                 if(signer):
-                    payload = {"sub": "user1", "aud": ["audience"]}
-                    payload["sub"] = signer
+                    payload = {"sub": ""}
+                    payload["sub"] = signer.lower()
                     token = JWTModule.create_jwt(payload)
                     return {"token": token}
             else:
@@ -50,6 +48,7 @@ class JWTRouter:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
             )
+                           
                 
         
 
