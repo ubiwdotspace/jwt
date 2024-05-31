@@ -58,7 +58,7 @@ class JWTRouter:
                     response = requests.post(url, json=payload, headers=headers)   
                     data = json.loads(response.text)
                     smart_account_address = data["result"][0]["smartAccountAddress"]
-                    payload = {"sub": smart_account_address}
+                    payload = {"sub": smart_account_address.lower()}
                     token = JWTModule.create_jwt(payload)
                     return {"token": token}
             else:
