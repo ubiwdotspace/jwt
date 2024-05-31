@@ -5,6 +5,8 @@ from config import Config
 from eth_account.messages import encode_defunct
 # Initialize Web3
 from web3 import Web3
+import requests
+import json
 from fastapi import Depends, FastAPI
 from fastapi_simple_rate_limiter import rate_limiter
 w3 = Web3(Web3.HTTPProvider(Config.RPC_ENDPOINT))
@@ -34,10 +36,29 @@ class JWTRouter:
             # signable_msg_from_hexstr = encode_defunct(text=msg)
             # signed_message =  w3.eth.account.sign_message(signable_msg_from_hexstr, private_key=key)
             # print(signed_message)
-                signer = SignModule.get_address_of(signature,msg)              
+                signer = SignModule.get_address_of(signature,msg)   
                 if(signer):
-                    payload = {"sub": ""}
-                    payload["sub"] = signer.lower()
+                    url = Config.RPC_ENDPOINT
+                    signer = w3.to_checksum_address(signer)
+                    payload = {
+                        "jsonrpc": "2.0",
+                        "method": "particle_aa_getSmartAccount",
+                        "params": [
+                            {
+                            "name": "SIMPLE",
+                            "version": "1.0.0",
+                            "ownerAddress": signer
+                            }
+                        ]
+                    }
+                    headers = {
+                        "accept": "application/json",
+                        "content-type": "application/json",
+                    }
+                    response = requests.post(url, json=payload, headers=headers)   
+                    data = json.loads(response.text)
+                    smart_account_address = data["result"][0]["smartAccountAddress"]
+                    payload = {"sub": smart_account_address}
                     token = JWTModule.create_jwt(payload)
                     return {"token": token}
             else:
