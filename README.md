@@ -12,13 +12,13 @@ Before starting, ensure you have Docker installed on your machine. The provided 
 Clone the repository to your local machine:
 
 ```
-git clone [repository-url]
+git clone https://github.com/ubiwdotspace/jwt.git
 ```
 
 Navigate to the project directory:
 
 ```
-cd [local-repository-path]
+cd jwt
 ```
 
 ## Configuration
